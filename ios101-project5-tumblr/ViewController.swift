@@ -6,12 +6,27 @@
 import UIKit
 import Nuke
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return posts.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell()
+        
+        cell.textLabel?.text = "\(posts[indexPath.row].caption.decodingHTMLEntities())"
+        return cell
+    }
+    
 
-
+    @IBOutlet weak var tumblrPostTableView: UITableView!
+    
+    private var posts: [Post] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        tumblrPostTableView.dataSource = self
         
         fetchPosts()
     }
@@ -40,20 +55,40 @@ class ViewController: UIViewController {
                 let blog = try JSONDecoder().decode(Blog.self, from: data)
 
                 DispatchQueue.main.async { [weak self] in
-
+                    
                     let posts = blog.response.posts
-
+                    
+                    
 
                     print("✅ We got \(posts.count) posts!")
                     for post in posts {
                         print("🍏 Summary: \(post.summary)")
                     }
+                    
+                    self?.posts = posts
+                    self?.tumblrPostTableView.reloadData()
                 }
 
             } catch {
                 print("❌ Error decoding JSON: \(error.localizedDescription)")
             }
+            
         }
         session.resume()
+    }
+}
+
+// Decode UTF-8 character in JSON
+extension String {
+    func decodingHTMLEntities() -> String {
+        guard let data = self.data(using: .utf8) else { return self }
+
+        let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+            .documentType: NSAttributedString.DocumentType.html,
+            .characterEncoding: String.Encoding.utf8.rawValue
+        ]
+
+        let decodedString = try? NSAttributedString(data: data, options: options, documentAttributes: nil).string
+        return decodedString ?? self
     }
 }
