@@ -7,6 +7,36 @@ import UIKit
 import Nuke
 
 class ViewController: UIViewController, UITableViewDataSource {
+    @IBOutlet weak var tumblrPostTableView: UITableView!
+    
+    /*
+    private var posts: [Post] = []
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        let nib = UINib(nibName: "PostTableViewCell", bundle: nil)
+        tumblrPostTableView.register(nib, forCellReuseIdentifier: "PostCell")
+
+        fetchPosts()
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return posts.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "PostCell", for: indexPath) as? PostTableViewCell else {
+            fatalError("Could not dequeue a PostTableViewCell")
+        }
+        
+        // Configure the cell
+        let post = posts[indexPath.row]
+        cell.configure(with: post)
+        return cell
+    }
+     */
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return posts.count
     }
@@ -14,15 +44,12 @@ class ViewController: UIViewController, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
         
-        cell.textLabel?.text = "\(posts[indexPath.row].caption.decodingHTMLEntities())"
+        cell.textLabel?.text = "\(posts[indexPath.row].summary.decodingHTMLEntities())"
         return cell
     }
     
-
-    @IBOutlet weak var tumblrPostTableView: UITableView!
-    
     private var posts: [Post] = []
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -30,8 +57,6 @@ class ViewController: UIViewController, UITableViewDataSource {
         
         fetchPosts()
     }
-
-
 
     func fetchPosts() {
         let url = URL(string: "https://api.tumblr.com/v2/blog/humansofnewyork/posts/photo?api_key=1zT8CiXGXFcQDyMFG7RtcfGLwTdDjFUJnZzKJaWTmgyK4lKGYk")!
